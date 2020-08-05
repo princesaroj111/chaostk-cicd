@@ -15,7 +15,6 @@
                 "tolerance": 200,
                 "provider": {
                     "type": "http",
-                    "timeout": 1,
                     "url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io"
                 }
             }
