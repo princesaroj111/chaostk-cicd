@@ -3,7 +3,7 @@
   "title": "Toxiproxy testing",
   "description": "Here Awaited toxic arrives",
   "configuration": {
-    "toxiproxy_url" : "http://toxiproxy-balancer-301145422.us-east-1.elb.amazonaws.com"
+    "toxiproxy_url" : "http://10.72.0.222:8474"
   },
   "steady-state-hypothesis": {
     "title": "Application responds",
