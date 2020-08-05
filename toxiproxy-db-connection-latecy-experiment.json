@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "title": "Toxiproxy testing",
+  "description": "Here Awaited toxic arrives",
+  "configuration": {
+    "toxiproxy_url" : "http://toxiproxy-balancer-301145422.us-east-1.elb.amazonaws.com"
+  },
+  "steady-state-hypothesis": {
+    "title": "Application responds",
+    "probes": [
+      {
+        "type": "probe",
+        "name": "The Replication must proceed",
+        "tolerance": 200,
+        "provider": {
+          "type": "http",
+          "url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io"
+        }
+      }
+    ]
+  },
+  "method": [
+    {
+      "name": "create-latency-toxic",
+      "provider": {
+        "module": "chaostoxi.toxic.actions",
+        "type": "python",
+        "arguments": {
+          "latency": 2000,
+          "for_proxy": "fault_poc_mysql_master",
+          "toxic_name": "latency-mysql"
+        },
+        "func": "create_latency_toxic"
+      },
+      "type": "action"
+    }
+  ],
+  "rollbacks": [
+  ]
+}
