@@ -1,0 +1,75 @@
+{
+    "version": "1.0.0",
+    "title": "Exploring assumptions if a dependency starts responding slowly",
+    "description": "Uses the Spring Chaos Monkey to manipulate a service. Dependent services should gracefully deal with the slowness.",
+    "tags": [
+        "service",
+        "spring",
+        "demo"
+    ],
+    "steady-state-hypothesis": {
+        "probes": [
+            {
+                "type": "probe",
+                "name": "Local spring boot application",
+                "tolerance": 200,
+                "provider": {
+                    "type": "http",
+                    "timeout": 1,
+                    "url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io"
+                }
+            }
+        ],
+        "title": "System is healthy."
+    },
+    "method": [
+        {
+            "name": "enable_chaosmonkey",
+            "provider": {
+                "arguments": {
+                    "base_url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/actuator"
+                },
+                "func": "enable_chaosmonkey",
+                "module": "chaosspring.actions",
+                "type": "python"
+            },
+            "type": "action"
+        },
+        {
+            "name": "configure_assaults",
+            "provider": {
+                "arguments": {
+                    "base_url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/actuator",
+                    "assaults_configuration": {
+                        "level": 1,
+                        "latencyRangeStart": 2000,
+                        "latencyRangeEnd": 5000,
+                        "latencyActive": true,
+                        "exceptionsActive": false,
+                        "killApplicationActive": false,
+                        "restartApplicationActive": false
+                    }
+                },
+                "func": "change_assaults_configuration",
+                "module": "chaosspring.actions",
+                "type": "python"
+            },
+            "type": "action"
+        }
+    ],
+    "rollbacks": [
+       {
+            "name": "disable_chaosmonkey",
+            "provider": {
+                "arguments": {
+                    "base_url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/actuator"
+                },
+                "func": "disable_chaosmonkey",
+                "module": "chaosspring.actions",
+                "type": "python"
+            },
+            "type": "action"
+        }
+    ]
+}
+
