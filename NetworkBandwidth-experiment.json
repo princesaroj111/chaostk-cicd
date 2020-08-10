@@ -40,7 +40,7 @@
   "rollbacks": [
     {
       "pauses": {
-        "before": 30
+        "before": 15
       },
       "type": "action",
       "name": "reset all proxies",

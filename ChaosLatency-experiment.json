@@ -56,7 +56,7 @@
   "rollbacks": [
     {
       "pauses": {
-        "before": 30
+        "before": 15
       },
       "name": "disable_chaosmonkey",
       "provider": {
