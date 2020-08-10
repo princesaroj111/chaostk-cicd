@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "title": "[Toxiproxy] Database Network TimeOut Experiment",
+  "description": "Stops all data from getting through, and closes the connection after timeout defined",
+  "configuration": {
+    "toxiproxy_url" : "http://10.72.0.222:8474"
+  },
+  "steady-state-hypothesis": {
+    "title": "DB connection",
+    "probes": [
+      {
+        "type": "probe",
+        "name": "The Export service is able to call db",
+        "tolerance": 200,
+        "provider": {
+          "type": "http",
+          "url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/rest/export/data"
+        }
+      }
+    ]
+  },
+  "method": [
+    {
+      "name": "create-timeout-toxic",
+      "provider": {
+        "module": "chaostoxi.toxic.actions",
+        "type": "python",
+        "arguments": {
+          "for_proxy": "fault_poc_mysql_master",
+          "timeout": 2,
+          "toxic_name": "DbTimeout"
+        },
+        "func": "create_timeout_toxic"
+      },
+      "type": "action"
+    }
+
+  ],
+  "rollbacks": [
+      {
+        "pauses": {
+          "before": 30
+        },
+        "type": "action",
+        "name": "reset all proxies",
+        "provider": {
+          "type": "python",
+          "module": "chaostoxi.proxy.actions",
+          "func": "reset"
+        }
+      }
+  ]
+}

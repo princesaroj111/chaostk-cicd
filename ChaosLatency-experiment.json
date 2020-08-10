@@ -1,0 +1,73 @@
+{
+  "version": "1.0.0",
+  "title": "Fault Tolerance Demo with spring boot chaos monkey setup",
+  "description": "Method Latency via Chaos Monkey",
+  "steady-state-hypothesis": {
+    "title": "Method call",
+    "probes": [
+      {
+        "type": "probe",
+        "name": "Import REST Call",
+        "tolerance": 200,
+        "provider": {
+          "type": "http",
+          "url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/rest/import"
+        }
+      }
+    ]
+  },
+  "method": [
+
+    {
+      "name": "enable_chaosmonkey",
+      "provider": {
+        "arguments": {
+          "base_url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/actuator"
+        },
+        "func": "enable_chaosmonkey",
+        "module": "chaosspring.actions",
+        "type": "python"
+      },
+      "type": "action"
+    },
+    {
+      "name": "configure_assaults",
+      "provider": {
+        "arguments": {
+          "base_url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/actuator",
+          "assaults_configuration": {
+            "level": 1,
+            "latencyRangeStart":5000,
+            "latencyRangeEnd": 7000,
+            "latencyActive": true,
+            "exceptionsActive": false,
+            "killApplicationActive": false,
+            "restartApplicationActive": false,
+            "watchedCustomServices":["com.adobe.demo.fault.controller.ReplicationConsumer.importAsset"]
+          }
+        },
+        "func": "change_assaults_configuration",
+        "module": "chaosspring.actions",
+        "type": "python"
+      },
+      "type": "action"
+    }
+  ],
+  "rollbacks": [
+    {
+      "pauses": {
+        "before": 30
+      },
+      "name": "disable_chaosmonkey",
+      "provider": {
+        "arguments": {
+          "base_url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/actuator"
+        },
+        "func": "disable_chaosmonkey",
+        "module": "chaosspring.actions",
+        "type": "python"
+      },
+      "type": "action"
+    }
+  ]
+}

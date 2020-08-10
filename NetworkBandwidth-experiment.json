@@ -1,0 +1,54 @@
+{
+  "version": "1.0.0",
+  "title": "[Toxiproxy] Network bandwidth",
+  "description": "Limit a connection to a maximum number of kilobytes(70KB) per second.",
+  "configuration": {
+    "toxiproxy_url" : "http://10.72.0.222:8474"
+  },
+  "steady-state-hypothesis": {
+    "title": "Blob Download from S3",
+    "probes": [
+      {
+        "type": "probe",
+        "name": "The Blob should be downloaded by export service within specified time",
+        "tolerance": 200,
+        "provider": {
+          "timeout": 10,
+          "type": "http",
+          "url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/rest/download/1234"
+        }
+      }
+    ]
+  },
+  "method": [
+    {
+      "name": "create-bandwith-degradation-toxic",
+      "provider": {
+        "module": "chaostoxi.toxic.actions",
+        "type": "python",
+        "arguments": {
+          "for_proxy": "s3_download_link_public_443",
+          "rate": 70,
+          "toxic_name": "LimitBandwidth"
+        },
+        "func": "create_bandwith_degradation_toxic"
+      },
+      "type": "action"
+    }
+
+  ],
+  "rollbacks": [
+    {
+      "pauses": {
+        "before": 30
+      },
+      "type": "action",
+      "name": "reset all proxies",
+      "provider": {
+        "type": "python",
+        "module": "chaostoxi.proxy.actions",
+        "func": "reset"
+      }
+    }
+  ]
+}

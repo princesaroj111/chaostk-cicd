@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "title": "Fault Tolerance Demo with spring boot chaos monkey setup",
+  "description": "Application Kill Fault Injection",
+  "steady-state-hypothesis": {
+    "title": "Application responds",
+    "probes": [
+      {
+        "type": "probe",
+        "name": "Application in healthy State",
+        "tolerance": 200,
+        "provider": {
+          "type": "http",
+          "url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/"
+        }
+      }
+    ]
+  },
+  "method": [
+
+    {
+      "name": "enable_chaosmonkey",
+      "provider": {
+        "arguments": {
+          "base_url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/actuator"
+        },
+        "func": "enable_chaosmonkey",
+        "module": "chaosspring.actions",
+        "type": "python"
+      },
+      "type": "action"
+    },
+    {
+      "name": "configure_assaults",
+      "provider": {
+        "arguments": {
+          "base_url": "https://faulttolerancedemo-dev-va6.dev.cloud.adobe.io/actuator",
+          "assaults_configuration": {
+            "level": 1,
+            "latencyRangeStart": 12000,
+            "latencyRangeEnd": 15000,
+            "latencyActive": true,
+            "exceptionsActive": false,
+            "killApplicationActive": true,
+            "runtimeAssaultCronExpression": "*/10 * * * * ?",
+            "restartApplicationActive": true
+          }
+        },
+        "func": "change_assaults_configuration",
+        "module": "chaosspring.actions",
+        "type": "python"
+      },
+      "type": "action",
+      "pauses": {
+        "after": 15
+      }
+
+    }
+  ],
+  "rollbacks": [
+  ]
+}
